@@ -1,0 +1,223 @@
+
+
+
+      import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane; 
+import javax.swing.table.DefaultTableModel;
+
+
+
+
+
+   public NewJFrame() {
+        initComponents();
+        Connect();
+        ShowData();
+    }
+    
+    Connection con;
+    PreparedStatement pst;
+
+
+
+
+    public void Connect(){
+        
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/employeedb","root","");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    
+    
+    
+    
+    }
+
+
+
+
+
+   private void ShowData(){
+        
+        try {
+            int QQ;
+            pst = con.prepareStatement("SELECT * FROM employee");
+            ResultSet Rs = pst.executeQuery();
+            
+            ResultSetMetaData RSMD = Rs.getMetaData();
+
+            QQ = RSMD.getColumnCount();
+            
+            DefaultTableModel DFG =(DefaultTableModel)table1.getModel(); 
+            
+            DFG.setRowCount(0);
+             
+            while(Rs.next()){
+        
+            Vector v2 = new Vector();
+             
+            for(int aa=1; aa<=QQ; aa++){
+                 
+                v2.add(Rs.getString("empid"));
+                v2.add(Rs.getString("name"));
+                v2.add(Rs.getString("age"));
+                v2.add(Rs.getString("email"));
+                v2.add(Rs.getString("status"));
+                v2.add(Rs.getString("position"));
+                v2.add(Rs.getString("tax_rate"));
+                v2.add(Rs.getString("salary"));
+                v2.add(Rs.getString("hiredate"));
+                
+             }
+             
+             DFG.addRow(v2);
+        
+        }
+        } catch (SQLException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    }
+
+
+
+
+
+
+
+
+      Insert Code
+
+
+      try {
+            String empid = txtId.getText();
+            String name = txtName.getText();
+            String age = txtAge.getText();
+            String email = txtEmail.getText();
+            String status = txtStatus.getText();
+            String position = txtPosition.getText();
+            String tax_rate = txtRate.getText();
+            String salary = txtSalary.getText();
+            
+            pst = con.prepareStatement("INSERT INTO employee (empid,name,age,email,status,position,tax_rate,salary,hiredate)VALUES(?,?,?,?,?,?,?,?,?)");
+            
+            pst.setString(1,empid);
+            pst.setString(2,name);
+            pst.setString(3,age);
+            pst.setString(4,email);
+            pst.setString(5,status);
+            pst.setString(6,position);
+            pst.setString(7,tax_rate);
+            pst.setString(8,salary);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String hiredate = sdf.format(Date_Chooser.getDate());
+            pst.setString(9,hiredate);
+            
+            int a = pst.executeUpdate();
+            
+            
+            if (a==1){
+            
+             JOptionPane.showMessageDialog(this,"Record Inserted Successfully");
+             ShowData();
+              
+             }else{
+                
+                 JOptionPane.showMessageDialog(this,"Error, Please Try Again");
+                
+                  }
+              
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }                                         
+
+
+
+
+
+
+     Update Code
+
+
+     try {
+            String empid = txtId.getText();
+            String name = txtName.getText();
+            String age = txtAge.getText();
+            String email = txtEmail.getText();
+            String status = txtStatus.getText();
+            String position = txtPosition.getText();
+            String tax_rate = txtRate.getText();
+            String salary = txtSalary.getText();
+            
+            pst = con.prepareStatement("update employee set name= ?,age= ?,email= ?,status= ?,position= ?,tax_rate= ?,salary= ?,hiredate= ? where empid= ?");
+            
+            pst.setString(1,name);
+            pst.setString(2,age);
+            pst.setString(3,email);
+            pst.setString(4,status);
+            pst.setString(5,position);
+            pst.setString(6,tax_rate);
+            pst.setString(7,salary);
+            pst.setString(9,empid);
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String hiredate = sdf.format(Date_Chooser.getDate());
+            pst.setString(8,hiredate);
+            
+            int k = pst.executeUpdate();
+            if(k==1){
+
+             JOptionPane.showMessageDialog(this, "Record Updated Successfully");
+             ShowData();
+
+            }else{
+
+             JOptionPane.showMessageDialog(this, "Update Failed");
+
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }                                         
+
+
+
+
+
+     Delete Code
+
+
+     try {
+            String empid = txtId.getText();
+            pst=con.prepareStatement("DELETE FROM employee WHERE empid=?");
+            pst.setString(1,empid);
+            
+            int k = pst.executeUpdate();
+            if(k==1){
+
+             JOptionPane.showMessageDialog(this, "Record Deleted Successfully");
+             ShowData();
+
+            }else{
+
+            JOptionPane.showMessageDialog(this, "Error, Please try again");
+
+           }
+        } catch (SQLException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }                                         
